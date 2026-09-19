@@ -74,7 +74,8 @@ void handle_touch_event(IOHIDEventRef parentEvent) {
         };
 #pragma pack(pop)
         //memcpy(&msg.fingerPayload, &msg.msg.payload, sizeof(IndigoPayload));
-        BOOL sent = [instance sendIndigoMessageDirect:&msg size:sizeof(msg)];
+        BOOL sent = [instance sendIndigoMessageDirect:(void *)&msg size:sizeof(msg)];
+
         if(!sent) {
             // Attempt to reconnect
             [instance connect];
@@ -110,15 +111,16 @@ mach_port_t SimulatorHIDServerInit() {
     IOHIDEventSystemRef systemRef = IOHIDEventSystemCreate(NULL);
     IOHIDEventSystemOpen(systemRef, handle_event, NULL, NULL, NULL);
     
-    // Setup our Mach listener
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [[FBSimulatorHID
         hidForSimulator:(id)[NSObject class]]
      onQueue:dispatch_get_global_queue(QOS_CLASS_DEFAULT, 0) doOnResolved:^(FBSimulatorHID *hid) {
-        instance = hid;
+        instance = (id)hid;
         NSLog(@"HID server: %@", hid);
         dispatch_semaphore_signal(sema);
     }];
+
+
     
     // wait until we have a valid port
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);

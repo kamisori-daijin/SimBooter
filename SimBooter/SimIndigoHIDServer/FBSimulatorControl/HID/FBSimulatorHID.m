@@ -29,7 +29,8 @@
 
 #pragma mark Initializers
 
-static const char *SimulatorHIDClientClassName = "SimulatorKit.SimDeviceLegacyHIDClient";
+static const char *SimulatorHIDClientClassName __attribute__((unused)) = "SimulatorKit.SimDeviceLegacyHIDClient";
+
 
 + (dispatch_queue_t)workQueue
 {
@@ -73,7 +74,8 @@ static const char *SimulatorHIDClientClassName = "SimulatorKit.SimDeviceLegacyHI
     // Simulator.app creates a Mach Port for the 'IndigoHIDRegistrationPort' and therefore succeeds in the above call.
     // As with 'PurpleFBServer' this can be registered with 'register-head-services'
     // The first step is to create the mach port
-    NSError *innerError = nil;
+    __unused NSError *innerError = nil;
+
     mach_port_t registrationPort = 0;
     mach_port_t machTask = mach_task_self();
     kern_return_t result = mach_port_allocate(machTask, MACH_PORT_RIGHT_RECEIVE, &registrationPort);

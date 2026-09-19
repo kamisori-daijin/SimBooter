@@ -30,14 +30,14 @@ void jbserver_sim_get_launchd(mach_msg_header_t *message) {
 int hooked_xpc_receive_mach_msg(void *msg, void *a2, void *a3, void *a4, xpc_object_t *xOut) {
     size_t msgBufSize = 0;
     struct jbserver_mach_msg *jbsMachMsg = (struct jbserver_mach_msg *)dispatch_mach_msg_get_msg(msg, &msgBufSize);
-    bool wasProcessed = false;
+    // bool wasProcessed = false;
     if (jbsMachMsg != NULL && msgBufSize >= sizeof(mach_msg_header_t)) {
         size_t msgSize = jbsMachMsg->hdr.msgh_size;
         if (msgSize <= msgBufSize && msgSize >= sizeof(struct jbserver_mach_msg) && jbsMachMsg->magic == JBSERVER_MACH_MAGIC) {
             if(jbsMachMsg->action == JBSERVER_MACH_GET_HOST_LAUNCHD_PORT) {
                 jbserver_sim_get_launchd(&jbsMachMsg->hdr);
             } else {
-                dprintf(6, "ERROR: Unexpectedly received jbserver action %d\n", jbsMachMsg->action);
+                dprintf(6, "ERROR: Unexpectedly received jbserver action %llu\n", jbsMachMsg->action);
                 //abort();
             }
         }

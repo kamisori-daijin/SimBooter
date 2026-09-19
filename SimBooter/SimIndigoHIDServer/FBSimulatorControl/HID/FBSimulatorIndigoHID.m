@@ -168,6 +168,10 @@ typedef struct {
   return message;
 }
 
++ (instancetype)simulatorKitHIDWithError:(NSError **)error {
+  return nil;
+}
+
 @end
 
 @implementation FBSimulatorIndigoHID_Reimplemented
@@ -273,5 +277,6 @@ typedef struct {
   memcpy(destination, source, sizeof(IndigoButton));
   return message;
 }
+
 
 @end

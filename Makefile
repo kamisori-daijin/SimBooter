@@ -1,7 +1,13 @@
 TARGET := iphone:clang:latest:14.0
 ARCHS = arm64
 GO_EASY_ON_ME := 1
+THEOS_ROOTLESS_SCHEME = rootless
 # TODO: replace iOSSimData?
+
+THEOS_SUBPROJECT_CFLAGS += -Wno-error -Wno-unused-variable -Wno-incompatible-pointer-types -Wno-incomplete-implementation
+ADDITIONAL_CFLAGS += -Wno-error -Wno-unused-variable -Wno-incompatible-pointer-types -Wno-incomplete-implementation
+
+
 
 include $(THEOS)/makefiles/common.mk
 

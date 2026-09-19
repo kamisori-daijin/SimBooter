@@ -32,7 +32,7 @@ void fixed_xpc_connection_enable_sim2host_4sim(xpc_connection_t connection) {
 xpc_connection_t xpc_connection_create_listener(const char* name, dispatch_queue_t queue);
 xpc_connection_t xpc_connection_create_mach_service(const char *name, dispatch_queue_t targetq, uint64_t flags);
 int main(int argc, const char **argv, const char **envp) {
-    static IOSurfaceRemoteServer *server;
+    static __unused IOSurfaceRemoteServer *server;
     xpc_object_t (*xpc_connection_create_mach_service)(const char *name, dispatch_queue_t targetq, uint64_t flags) = dlsym(RTLD_DEFAULT, "xpc_connection_create_mach_service");
     // com.apple.accelerator.iosurface
     xpc_connection_t peerConnection = xpc_connection_create_mach_service("com.apple.IOSurface.Remote", dispatch_get_main_queue(), XPC_CONNECTION_MACH_SERVICE_LISTENER);
