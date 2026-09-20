@@ -14,6 +14,7 @@ While there is no hardcoded offset at the moment, some code paths are hardcoded 
 
 ## Additional info
 - [Simulator boot process](SimBootProcess.md) on macOS
+- Please put Simulator files in /var/jb/iOSSimData
 
 ## Credits
 Some code have been borrowed from:
