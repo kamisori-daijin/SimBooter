@@ -5,8 +5,8 @@ add_trustcache() {
     local path="$1"
     local cdhash
     cdhash=$(ldid -arch arm64 -h "$path" 2>/dev/null | grep CDHash= | cut -c8-)
-    echo "Adding $path cdhash: $cdhash"
-    jbctl trustcache add "$cdhash"
+    #echo "Adding $path cdhash: $cdhash"
+    #jbctl trustcache add "$cdhash"
 }
 
 add_trustcache "sbin/ldfix.dylib"

@@ -1,7 +1,9 @@
 TARGET := iphone:clang:latest:14.0
 ARCHS = arm64
 GO_EASY_ON_ME := 1
-THEOS_ROOTLESS_SCHEME = rootless
+THEOS_PACKAGE_SCHEME = rootless
+export THEOS_DEVICE_IP = 127.0.0.1
+export THEOS_DEVICE_PORT = 2222
 # TODO: replace iOSSimData?
 
 THEOS_SUBPROJECT_CFLAGS += -Wno-error -Wno-unused-variable -Wno-incompatible-pointer-types -Wno-incomplete-implementation
