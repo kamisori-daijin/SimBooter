@@ -87,9 +87,9 @@ int main(int argc, char *argv[], char *envp[]) {
     void *liblaunch_sim = dlopen_or_exit("/var/jb/iOSSimData/RuntimeRoot/usr/lib/system/host/liblaunch_sim.dylib");
     launch_sim_register_endpoint = dlsym(liblaunch_sim, "launch_sim_register_endpoint");
     assert(launch_sim_register_endpoint);
-    
-    add_xpc_bundle(JBROOT_PATH("/usr/macOS/Frameworks/MTLSimDriver.framework/XPCServices/SimRenderServer.xpc"));
-    add_xpc_bundle(JBROOT_PATH("/usr/macOS/Frameworks/MTLSimDriver.framework/XPCServices/MTLSimDriverHost.xpc"));
+    //add_xpc_bundle("/var/jb/iOSSimData/RuntimeRoot/System/Library/PrivateFrameworks/MTLSimDriver.framework/XPCServices/SimRenderServer.xpc");
+    add_xpc_bundle("/var/jb/iOSSimData/RuntimeRoot/System/Library/PrivateFrameworks/MTLSimDriver.framework/XPCServices/MTLSimDriverHost.xpc");
+
     
     // register Indigo server
     mach_port_t indigo_port = SimulatorHIDServerInit();
