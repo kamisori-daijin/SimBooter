@@ -1,4 +1,4 @@
-TARGET := iphone:clang:latest:14.0
+TARGET := iphone:clang:latest:18.0
 ARCHS = arm64
 GO_EASY_ON_ME := 1
 THEOS_PACKAGE_SCHEME = rootless

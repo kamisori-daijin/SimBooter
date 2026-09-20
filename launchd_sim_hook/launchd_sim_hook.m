@@ -57,10 +57,16 @@ int hooked_xpc_receive_mach_msg(void *msg, void *a2, void *a3, void *a4, xpc_obj
 DYLD_INTERPOSE(hooked_xpc_receive_mach_msg, xpc_receive_mach_msg);
 
 __attribute__((constructor)) static void init() {
-    // Obtain host's launchd port using our launchd_sim_trampoline_tank hook
     mach_port_t tank_port = MACH_PORT_NULL;
     task_get_bootstrap_port(mach_task_self(), &tank_port);
     assert(tank_port != MACH_PORT_NULL);
-    task_get_launchd_port(tank_port, &host_launchd_port);
+
+    host_launchd_port = MACH_PORT_NULL;
+    
+    host_get_special_port(mach_host_self(), HOST_LOCAL_NODE, HOST_AMFID_PORT, &host_launchd_port);
+    if (host_launchd_port == MACH_PORT_NULL) {
+        host_launchd_port = tank_port; // bootstrap_port
+    }
+    
     assert(host_launchd_port != MACH_PORT_NULL);
 };

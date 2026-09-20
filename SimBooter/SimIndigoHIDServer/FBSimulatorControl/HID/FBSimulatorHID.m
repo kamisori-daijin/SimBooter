@@ -258,7 +258,7 @@ static const char *SimulatorHIDClientClassName __attribute__((unused)) = "Simula
   if (self.registrationPort == 0) {
     return;
   }
-  mach_port_destroy(mach_task_self(), self.registrationPort);
+  mach_port_deallocate(mach_task_self(), self.registrationPort);
   self.registrationPort = 0;
   self.replyPort = 0;
 }
