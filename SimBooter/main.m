@@ -82,9 +82,9 @@ int main(int argc, char *argv[], char *envp[]) {
     xpcConnections = [NSMutableArray array];
     
     setenv("LAUNCHD_SIM_LABEL", "com.apple.CoreSimulator.SimDevice.00000000-0000-0000-0000-000000000000", 0);
-    validate_launchd_sim_connection();
+    //validate_launchd_sim_connection();
     
-    void *liblaunch_sim = dlopen_or_exit("/var/jb/iOSSimRootFS/usr/lib/system/host/liblaunch_sim.dylib");
+    void *liblaunch_sim = dlopen_or_exit("/var/jb/iOSSimData/RuntimeRoot/usr/lib/system/host/liblaunch_sim.dylib");
     launch_sim_register_endpoint = dlsym(liblaunch_sim, "launch_sim_register_endpoint");
     assert(launch_sim_register_endpoint);
     

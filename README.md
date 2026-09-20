@@ -15,6 +15,9 @@ While there is no hardcoded offset at the moment, some code paths are hardcoded 
 ## Additional info
 - [Simulator boot process](SimBootProcess.md) on macOS
 - Please put Simulator files in /var/jb/iOSSimData
+- Simulator runtime path: `/Volumes/iOS 27.0 Simulator/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 27.0.simruntime`(Recomend Tar archive)
+- `ln -s /var/jb/iOSSimData/RuntimeRoot /var/jb/iOSSimRootFS`
+- Using scp to copy files
 
 ## Credits
 Some code have been borrowed from:
