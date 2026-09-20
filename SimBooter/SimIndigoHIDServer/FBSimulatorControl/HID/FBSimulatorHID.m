@@ -229,7 +229,7 @@ static const char *SimulatorHIDClientClassName __attribute__((unused)) = "Simula
 
   return [FBFuture onQueue:self.queue resolve:^ FBFuture<NSNull *> * {
     // Attempt to perform the handshake.
-    mach_msg_size_t size = 0x400;
+    mach_msg_size_t size = 0x4000;
     // FBControlCoreGlobalConfiguration.regularTimeout = 30
     mach_msg_timeout_t timeout = ((unsigned int) 1) * 1000;
     mach_msg_header_t *handshakeHeader = calloc(1, sizeof(mach_msg_header_t));
@@ -244,7 +244,9 @@ static const char *SimulatorHIDClientClassName __attribute__((unused)) = "Simula
         NSLog(@"Failed to get the Indigo Reply Port %d", result);
         return FBFuture.empty;
     } else {
-        NSLog(@"Successfully received the Indigo Reply Port: %d", handshakeHeader->msgh_remote_port);
+      NSLog(@"Successfully received the Indigo Reply Port: %d",
+            handshakeHeader->msgh_remote_port);
+      NSLog(@"Actual received message size: %d", handshakeHeader->msgh_size); 
     }
     // We have the registration port, so we can now set it.
     self.replyPort = handshakeHeader->msgh_remote_port;
