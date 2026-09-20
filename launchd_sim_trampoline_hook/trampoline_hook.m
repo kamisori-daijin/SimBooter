@@ -6,7 +6,13 @@
 // From jbclient_mach.c in Dopamine
 mach_port_t jbclient_mach_get_launchd_port(void) {
     mach_port_t launchdPort = MACH_PORT_NULL;
-    task_get_bootstrap_port(task_self_trap(), &launchdPort);
+    task_get_bootstrap_port(mach_task_self(), &launchdPort); 
+    
+    // FallBack
+    if (launchdPort == MACH_PORT_NULL) {
+        launchdPort = bootstrap_port;
+    }
+    
     return launchdPort;
 }
 
