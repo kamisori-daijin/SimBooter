@@ -109,7 +109,12 @@ void handle_event(void* target, void* refcon, IOHIDServiceRef service, IOHIDEven
 mach_port_t SimulatorHIDServerInit() {
     // Create and open an event system
     IOHIDEventSystemRef systemRef = IOHIDEventSystemCreate(NULL);
-    IOHIDEventSystemOpen(systemRef, handle_event, NULL, NULL, NULL);
+    
+    if (systemRef == NULL) {
+        NSLog(@"[Warning] IOHIDEventSystemCreate returned NULL. Skipping HID Open.");
+    } else {
+        IOHIDEventSystemOpen(systemRef, handle_event, NULL, NULL, NULL);
+    }
     
     dispatch_semaphore_t sema = dispatch_semaphore_create(0);
     [[FBSimulatorHID

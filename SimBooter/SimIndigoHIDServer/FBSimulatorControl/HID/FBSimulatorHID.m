@@ -229,7 +229,7 @@ static const char *SimulatorHIDClientClassName __attribute__((unused)) = "Simula
 
   return [FBFuture onQueue:self.queue resolve:^ FBFuture<NSNull *> * {
     // Attempt to perform the handshake.
-    mach_msg_size_t size = 0x4000;
+    mach_msg_size_t size = 0x400;
     // FBControlCoreGlobalConfiguration.regularTimeout = 30
     mach_msg_timeout_t timeout = ((unsigned int) 1) * 1000;
     mach_msg_header_t *handshakeHeader = calloc(1, sizeof(mach_msg_header_t));

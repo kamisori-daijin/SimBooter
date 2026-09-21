@@ -20,8 +20,12 @@ mach_port_t spawn_metal_simulator() {
     xpc_connection_set_event_handler(connection, ^(xpc_object_t object) {
         NSLog(@"Process received event: %@", [object description]);
     });
+    
+    
     xpc_connection_enable_sim2host_4sim(connection);
-    //xpc_connection_activate(connection);
+    
+    // Activate
+    xpc_connection_activate(connection);
     
     xpc_endpoint_t endpoint = xpc_endpoint_create(connection);
     mach_port_t port = xpc_endpoint_copy_listener_port_4sim(endpoint);
@@ -40,7 +44,7 @@ mach_port_t spawn_iosurface_server() {
         NSLog(@"Process received event: %@", [object description]);
     });
     xpc_connection_enable_sim2host_4sim(connection);
-    //xpc_connection_activate(connection);
+    xpc_connection_activate(connection);
     
     xpc_endpoint_t endpoint = xpc_endpoint_create(connection);
     mach_port_t port = xpc_endpoint_copy_listener_port_4sim(endpoint);
@@ -80,6 +84,9 @@ void validate_launchd_sim_connection() {
 
 int main(int argc, char *argv[], char *envp[]) {
     xpcConnections = [NSMutableArray array];
+    setenv("CoreSimulatorDisableResponsibility", "1", 1);
+    setenv("CoreSimulatorDisableLaunchdSignatureCheck", "1", 1);
+    setenv("DisableResponsibility", "1", 1);
     
     setenv("LAUNCHD_SIM_LABEL", "com.apple.CoreSimulator.SimDevice.00000000-0000-0000-0000-000000000000", 0);
     //validate_launchd_sim_connection();
