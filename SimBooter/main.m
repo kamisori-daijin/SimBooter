@@ -2,6 +2,7 @@
 @import Foundation;
 #import <rootless.h>
 
+
 kern_return_t bootstrap_look_up(mach_port_t bp, const char *service_name, mach_port_t *sp);
 void (*launch_sim_register_endpoint)(const char *launchd_sim_name, const char *service_name, mach_port_t service_port);
 void xpc_add_bundle(const char *, int);
@@ -11,18 +12,40 @@ mach_port_t xpc_endpoint_copy_listener_port_4sim(xpc_object_t endpoint);
 mach_port_t SimulatorHIDServerInit();
 NSMutableArray *xpcConnections;
 
+
+void fixed_xpc_connection_enable_sim2host_4sim(xpc_connection_t connection) {
+    if (xpc_get_type(connection) != XPC_TYPE_CONNECTION) {
+        fprintf(stderr, "Given object not of required type.\n");
+        abort();
+    }
+    
+    char *connection_ptr = (__bridge void *)connection;
+    if (*(uint32_t *)(connection_ptr + 0x40) != 0) {
+        fprintf(stderr, "Attempt to change the sim-to-host mode on a live connection.\n");
+        abort();
+    }
+    
+    // 0
+    *(uint32_t *)(connection_ptr + 0xC0) = 0;
+}
+
 mach_port_t spawn_metal_simulator() {
+    xpc_connection_t (*xpc_connection_create_mach_service)(const char *name, dispatch_queue_t targetq, uint64_t flags) = dlsym(RTLD_DEFAULT, "xpc_connection_create_mach_service");
+    assert(xpc_connection_create_mach_service);
+
     uuid_t uuid;
     uuid_generate(uuid);
-    xpc_connection_t connection = xpc_connection_create("com.apple.metal.simulator", NULL);
+    
+    // 
+    xpc_connection_t connection = xpc_connection_create_mach_service("com.apple.metal.simulator", NULL, XPC_CONNECTION_MACH_SERVICE_LISTENER);
     [xpcConnections addObject:connection];
     xpc_connection_set_instance(connection, uuid);
     xpc_connection_set_event_handler(connection, ^(xpc_object_t object) {
         NSLog(@"Process received event: %@", [object description]);
     });
     
-    
-    xpc_connection_enable_sim2host_4sim(connection);
+    // Fake
+    fixed_xpc_connection_enable_sim2host_4sim(connection);
     
     // Activate
     xpc_connection_activate(connection);
@@ -35,15 +58,21 @@ mach_port_t spawn_metal_simulator() {
 }
 
 mach_port_t spawn_iosurface_server() {
-    //xuuid_t uuid;
-    //uuid_generate(uuid);
-    xpc_connection_t connection = xpc_connection_create("com.apple.IOSurface.Remote", NULL);
+    xpc_connection_t (*xpc_connection_create_mach_service)(const char *name, dispatch_queue_t targetq, uint64_t flags) = dlsym(RTLD_DEFAULT, "xpc_connection_create_mach_service");
+    assert(xpc_connection_create_mach_service);
+
+    
+    xpc_connection_t connection = xpc_connection_create_mach_service("com.apple.IOSurface.Remote", NULL, XPC_CONNECTION_MACH_SERVICE_LISTENER);
     [xpcConnections addObject:connection];
-    //xpc_connection_set_instance(connection, uuid);
+    
     xpc_connection_set_event_handler(connection, ^(xpc_object_t object) {
         NSLog(@"Process received event: %@", [object description]);
     });
-    xpc_connection_enable_sim2host_4sim(connection);
+    
+    // Fake
+    fixed_xpc_connection_enable_sim2host_4sim(connection);
+    
+    // Activate
     xpc_connection_activate(connection);
     
     xpc_endpoint_t endpoint = xpc_endpoint_create(connection);
@@ -72,31 +101,21 @@ void *dlopen_or_exit(const char *path) {
     return handle;
 }
 
-void validate_launchd_sim_connection() {
-    const char *label = getenv("LAUNCHD_SIM_LABEL");
-    mach_port_t port = MACH_PORT_NULL;
-    bootstrap_look_up(bootstrap_port, label, &port);
-    if(port == MACH_PORT_NULL) {
-        printf("Failed to look up launchd_sim port for label %s\n", label);
-        exit(1);
-    }
-}
-
 int main(int argc, char *argv[], char *envp[]) {
     xpcConnections = [NSMutableArray array];
+    
+  
     setenv("CoreSimulatorDisableResponsibility", "1", 1);
     setenv("CoreSimulatorDisableLaunchdSignatureCheck", "1", 1);
     setenv("DisableResponsibility", "1", 1);
     
     setenv("LAUNCHD_SIM_LABEL", "com.apple.CoreSimulator.SimDevice.00000000-0000-0000-0000-000000000000", 0);
-    //validate_launchd_sim_connection();
     
     void *liblaunch_sim = dlopen_or_exit("/var/jb/iOSSimData/RuntimeRoot/usr/lib/system/host/liblaunch_sim.dylib");
     launch_sim_register_endpoint = dlsym(liblaunch_sim, "launch_sim_register_endpoint");
     assert(launch_sim_register_endpoint);
-    //add_xpc_bundle("/var/jb/iOSSimData/RuntimeRoot/System/Library/PrivateFrameworks/MTLSimDriver.framework/XPCServices/SimRenderServer.xpc");
+    
     add_xpc_bundle("/var/jb/iOSSimData/RuntimeRoot/System/Library/PrivateFrameworks/MTLSimDriver.framework/XPCServices/MTLSimDriverHost.xpc");
-
     
     // register Indigo server
     mach_port_t indigo_port = SimulatorHIDServerInit();
